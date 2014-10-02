@@ -1,4 +1,4 @@
-/** Exercise 1.3: Algebraic datatypes
+/** Exercise 1.4: Algebraic datatypes
   *
   * Copyright 2014 Yufei Cai <cai@mathematik.uni-marburg.de>
   *
