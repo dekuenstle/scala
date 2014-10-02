@@ -1,4 +1,7 @@
-scala
+Introduction to Parsing in Scala
 =====
 
-University of Tübingen course repository "Introduction to parsing in Scala"
+Veranstaltet durch Yufei Cai und Prof. Dr. Ostermann
+
+Eberhard Karls Universität Tübingen
+
