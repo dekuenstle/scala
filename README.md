@@ -1,7 +1,5 @@
-Introduction to Parsing in Scala
-=====
+###Introduction to Parsing in Scala
 
-Veranstaltet durch Yufei Cai und Prof. Dr. Ostermann
+Yufei Cai and Prof. Dr. Ostermann
 
 Eberhard Karls Universität Tübingen
-
