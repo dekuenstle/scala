@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hello.scala</title>
+  <link rel="stylesheet"
+        href="http://yfcai.github.io/scala/stylesheets/plt-style.css"
+        href_not_working="">
+</head>
+<body>
+  <a href="https://github.com/klauso/PLT2012"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+  <header>
+  <nav>
+    <ul>    
+        <li><a href="../html/1.1.html">1.1.html</a></li>
+        <li><a href="../html/1.2.html">1.2.html</a></li>
+        <li><a href="../html/1.3.html">1.3.html</a></li>
+        <li><a href="../html/1.4.html">1.4.html</a></li>
+        <li><a href="../html/test.html">test.html</a></li>
+    </ul>
+  </nav>
+  </header>
+  <article id="documentation">
+    <section id='section-1'>
+      <div class="docs"><ul>
+<li>Exercise 1.1: Hello-world in Scala</li>
+</ul>
+
+<p>Tasks: compination and execution</p>
+
+<ol>
+<li><p>Install Scala
+http://www.scala-lang.org/</p></li>
+<li><p>Save this file as <code>Hello.scala</code></p></li>
+<li><p>Run from command-line <code>scalac Hello.scala</code> to compile a bunch
+of class files</p></li>
+<li><p>Run from command-line <code>scala Hello</code></p></li>
+</ol>
+
+<p>Tasks: interpretation</p>
+
+<ol>
+<li><p>Run from command-line <code>scala</code> to start the Scala interpreter</p></li>
+<li><p>It&rsquo;s possible to evaluate Scala expressions in the interpreter;
+try <code>3 + 5</code>, or <code>new Tuple2(3, 5)</code></p></li>
+<li><p>Type <code>:load Hello.scala</code> into the interpreter to load this file</p></li>
+<li><p>Type <code>Hello.main(Array.empty)</code> to run the main function</p></li>
+<li><p>Type arbitrary scala code to evaluate it (e. g., 1 + 1)</p></li>
+</ol></div>
+      <div class="code"><code class='highlight'><pre><span class="k">object</span> <span class="nc">Hello</span> <span class="o">{</span></pre></code></div>
+    </section>
+    <section id='section-2'>
+      <div class="docs"><ul>
+<li>@param args   the command line arguments; <code>Array[String]</code> is
+          like Java&rsquo;s array type <code>String[]</code>.</li>
+</ul>
+
+<p>@return    something of type <code>Unit</code>, which is the Scala
+           equivalence of Java&rsquo;s <code>void</code> type.</p>
+</div>
+      <div class="code"><code class='highlight'><pre>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="c1">// define a constant variable `two`</span>
+    <span class="k">val</span> <span class="n">two</span> <span class="k">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1">// print as in java</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">&quot;1 plus 1 makes &quot;</span> <span class="o">+</span> <span class="n">two</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span></pre></code></div>
+    </section>
+  </article>
+</body>
+</html>
