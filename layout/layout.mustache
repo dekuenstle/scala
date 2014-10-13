@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <link rel="stylesheet"
+        href="http://yfcai.github.io/scala/stylesheets/plt-style.css"
+        href_not_working="{{ stylesheet }}">
+</head>
+<body>
+  <a href="https://github.com/klauso/PLT2012"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+  <header>
+    {{#sources?}}
+  <nav>
+    <ul>    
+        {{#sources}}
+        <li><a href="{{ url }}">{{ basename }}</a></li>
+        {{/sources}}
+    </ul>
+  </nav>
+  {{/sources?}}
+  </header>
+  <article id="documentation">
+    {{#sections}}
+    <section id='section-{{ section_id }}'>
+      <div class="docs">{{{ docs }}}</div>
+      <div class="code"><code class='highlight'><pre>{{{ code }}}</pre></code></div>
+    </section>
+    {{/sections}}
+  </article>
+</body>
+</html>
