@@ -11,29 +11,45 @@
   * http://creativecommons.org/licenses/by-nc-sa/3.0/
   *
   *
-  * Task
+  * Tasks
   *
-  * 1. Replace ??? in this file by a working implementation of
+  * 1. Read through this file to learn about case classes and
+  *    pattern-matching in Scala.
+  *
+  * 2. Replace ??? in this file by a working implementation of
   *    `circumference` so that the test `ShapesSpec` passes.
   */
 
 // `trait` is like an abstract class in Java
 trait Shapes {
 
+  /* Case classes are similar to structs in C. */
   case class Point(x: Double, y: Double)
 
+  /* Create a point */
   val origin: Point = Point(0, 0)
 
+  /* Access the x-coordinate.
+   * We may write alternatively
+   *
+   *   def x_coordinate(p: Point): Double = p.x
+   */
   def x_coordinate(p: Point): Double = p match {
     case Point(x, y) =>
       x
   }
 
+  /* Access the y-coordinate.
+   * We may write alternatively
+   *
+   *   def y_coordinate(p: Point): Double = p.y
+   */
   def y_coordinate(p: Point): Double = p match {
     case Point(x, y) =>
       y
   }
 
+  /* It is possible to pattern-match on 2 points at the same time. */
   def distance(p1: Point, p2: Point): Double = (p1, p2) match {
     case (Point(x1, y1), Point(x2, y2)) =>
       val dx = x2 - x1
@@ -42,6 +58,10 @@ trait Shapes {
   }
 
 
+  /* `Circle`, `Rectangle` and `Triangle` extend the trait `Shape`.
+   * Given an object of type `Shape`, we can pattern-match on it
+   * to figure out whether it's a circle, a rectangle or a triangle.
+   */
   sealed trait Shape
   case class Circle(center: Point, radius: Double) extends Shape
   case class Rectangle(bottomLeft: Point, topRight: Point) extends Shape
@@ -62,16 +82,17 @@ trait Shapes {
   }
 
 
-  // compute the circumference (i. e., length of enclosing curve)
-  // of a shape
-  //
-  // In Scala, one can put ??? as a place holder for something
-  // they have yet to implement. Beware that ??? may not work
-  // correctly if the type of the expected expression is unknown.
-  //
-  // Here and elsewhere, the student should replace ??? by
-  // a real implementation.
-  //
-  // The method `distance` may be useful here.
+  /* compute the circumference (i. e., length of enclosing curve)
+   * of a shape
+   *
+   * In Scala, one can put ??? as a place holder for something
+   * they have yet to implement. Beware that ??? may not work
+   * correctly if the type of the expected expression is unknown.
+   *
+   * Here and elsewhere, the student should replace ??? by
+   * a real implementation.
+   *
+   * The method `distance` may be useful here.
+   */
   def circumference(shape: Shape): Double = ???
 }
