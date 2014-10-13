@@ -23,8 +23,6 @@
   * 3. Type `:load Hello.scala` into the interpreter to load this file
   *
   * 4. Type `Hello.main(Array.empty)` to run the main function
-  *
-  * 5. Type arbitrary scala code to evaluate it (e. g., 1 + 1)
   */
 
 
