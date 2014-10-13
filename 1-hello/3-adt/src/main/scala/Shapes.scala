@@ -9,6 +9,12 @@
   * Licensed under:
   * Creative Commons Attribution-Noncommercial-Sharealike 3.0 Unported
   * http://creativecommons.org/licenses/by-nc-sa/3.0/
+  *
+  *
+  * Task
+  *
+  * 1. Replace ??? in this file by a working implementation of
+  *    `circumference` so that the test `ShapesSpec` passes.
   */
 
 // `trait` is like an abstract class in Java

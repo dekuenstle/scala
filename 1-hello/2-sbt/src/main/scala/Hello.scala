@@ -6,7 +6,7 @@
   * - compilation, execution, testing
   *
   *
-  * Instructions
+  * Tasks
   *
   * 1. Download and install `sbt`.
   *    http://www.scala-sbt.org/

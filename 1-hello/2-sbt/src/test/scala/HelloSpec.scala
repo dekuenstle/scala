@@ -15,7 +15,7 @@
   *             +--scala
   *
   *
-  * Instructions
+  * Tasks
   *
   * 1. In the directory `project-root`, create a file called
   *    `build.sbt` with the following lines in it. Beware that an

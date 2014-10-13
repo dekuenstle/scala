@@ -1,6 +1,6 @@
 /** Exercise 1.1: Hello-world in Scala
   *
-  * How to compile and run
+  * Tasks: compination and execution
   *
   * 1. Install Scala
   *    http://www.scala-lang.org/
@@ -13,7 +13,7 @@
   * 4. Run from command-line `scala Hello`
   *
   *
-  * How to run from interpreter
+  * Tasks: interpretation
   *
   * 1. Run from command-line `scala` to start the Scala interpreter
   *
@@ -23,6 +23,8 @@
   * 3. Type `:load Hello.scala` into the interpreter to load this file
   *
   * 4. Type `Hello.main(Array.empty)` to run the main function
+  *
+  * 5. Type arbitrary scala code to evaluate it (e. g., 1 + 1)
   */
 
 
