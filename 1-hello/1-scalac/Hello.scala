@@ -37,7 +37,6 @@ object Hello {
     // define a constant variable `two`
     val two = 1 + 1
 
-    // print as in java
-    println("1 plus 1 makes " + two)
+    System.out.println(two)
   }
 }
