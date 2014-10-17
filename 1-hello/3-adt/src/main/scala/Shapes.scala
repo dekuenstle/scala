@@ -94,5 +94,14 @@ trait Shapes {
    *
    * The method `distance` may be useful here.
    */
-  def circumference(shape: Shape): Double = ???
+  def circumference(shape: Shape): Double = shape match {
+    case Circle(center, radius) =>
+      math.Pi * 2 * radius
+
+    case Rectangle(Point(x1, y1), Point(x2, y2)) =>
+      math.abs(2*(x2 - x1)) + math.abs(2*(y2 - y1))
+
+    case Triangle(p1: Point, p2:Point, p3:Point) =>
+      distance(p1,p2) + distance(p2,p3) + distance(p3, p1)
+  }
 }
