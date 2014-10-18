@@ -50,6 +50,11 @@ class AESpec extends FlatSpec with AE {
     assert(parseMul("product of x and y") == None)
   }
 
+  "'parseStartString'" should "parse string starting with specific string" in {
+    assert(parseStartString("sum of 6 and 7", "sum of ") == Some(("sum of ","6 and 7")))
+    assert(parseStartString("sum of 6 and 7", "product of ") == None)
+  }
+
   "`parse`" should "parse e1 and e2" in {
     assert(parse("sum of 6 and product of 6 and 6") == e1)
     assert(parse("product of 6 and sum of 4 and 3") == e2)
