@@ -188,9 +188,34 @@ trait AE {
   // we define the helper `parseProductOf` and re-use `parseAnd`.
 
   // tries to match "product of "
-  def parseProductOf(code: String): Option[(String, String)] = ???
+  def parseProductOf(code: String): Option[(String, String)] = {
+    val productOf = "product of "
+    if(code.startsWith(productOf)) {
+      Some((productOf, code.drop(productOf)))
+    } else {
+      None
+    }
+  }
 
-  def parseMul(code: String): Option[(Mul, String)] = ???
+  def parseMul(code: String): Option[(Mul, String)] =
+    parseProductOf(code) match {
+      case None => None
+
+      case Some((productOf, afterProductOf)) =>
+        parseExp(afterProductOf) match {
+          case None => None
+          case Some((lhs, afterLhs)) =>
+            parseAnd(afterLhs) match {
+              case None => None
+              case Some((and, afterAnd)) =>
+                parseExp(afterAnd) match {
+                  case None => None
+                  case Some((rhs, rest)) =>
+                    Some((Mul(lhs,rhs),rest))
+                }
+            }
+        }
+    }
 
 
   // parse an expression by trying sums, products and numbers in
