@@ -191,7 +191,7 @@ trait AE {
   def parseProductOf(code: String): Option[(String, String)] = {
     val productOf = "product of "
     if(code.startsWith(productOf)) {
-      Some((productOf, code.drop(productOf)))
+      Some((productOf, code.drop(productOf.length)))
     } else {
       None
     }
@@ -282,5 +282,79 @@ trait AE {
   //   e1 == parse2("add 6 to multiply 6 by 6")
   //   e2 == parse2("multiply 6 by add 4 to 3")
 
-  def parse2(code: String): Exp = ???
+  def parse2(code: String):
+  Exp = parseExp2(code) match {
+    case Some((exp, rest)) if rest.isEmpty
+    => exp
+    case Some((exp, rest)) if rest.nonEmpty
+    => sys.error("not an expression: " + code)
+    case None
+    => sys.error("not an expression: " + code)
+  }
+
+  def parseExp2(code: String):
+    Option[(Exp, String)] = parseAdd2(code) match {
+      case Some((add, rest))
+      => Some((add, rest))
+      case None
+      => parseMul2(code) match {
+        case Some((mul, rest))
+        => Some((mul, rest))
+        case None
+        => parseNum(code) match {
+          case Some((num, rest))
+            => Some((num, rest))
+          case None
+            => None
+        }
+      }
+    }
+
+  def parseMul2(code: String):
+    Option[(Exp, String)] = parseSentence(code, "multiply ", " by ") match {
+      case None
+      => None
+      case Some((lhs, rhs, rest))
+      => Some((Mul(lhs, rhs), rest))
+    }
+
+  def parseAdd2(code: String):
+    Option[(Exp, String)] = parseSentence(code, "add ", " to ") match {
+      case None
+      => None
+      case Some((lhs, rhs, rest))
+      => Some((Add(lhs, rhs), rest))
+    }
+
+  def parseSentence(code: String, begin: String, separation: String):
+    Option[(Exp, Exp, String)] = parseStartString(code, begin) match {
+      case None
+      => None
+      case Some((beginStr, afterBeginStr))
+      => parseExp2(afterBeginStr) match {
+          case None
+          => None
+          case Some((lhs, afterLhs))
+          => parseStartString(afterLhs, separation) match {
+            case None
+            => None
+            case Some((sep, afterSep))
+            => parseExp2(afterSep) match {
+              case None
+                => None
+              case Some((rhs, rest))
+                => Some((lhs, rhs, rest))
+            }
+          }
+        }
+    }
+
+  def parseStartString(code: String, str:String):
+    Option[(String, String)] = {
+      if(code.startsWith(str)) {
+        Some((str, code.drop(str.length)))
+      } else {
+        None
+      }
+    }
 }
