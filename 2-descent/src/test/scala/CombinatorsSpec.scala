@@ -8,6 +8,8 @@
 
 import org.scalatest._
 
+/* UNCOMMENT AFTER COMPLETION OF 2.1
+
 class CombinatorsSpec extends FlatSpec with Combinators {
 
   /* Recall that by writing combinators taking functions as
@@ -63,3 +65,5 @@ class CombinatorsSpec extends FlatSpec with Combinators {
   /* Task 2.2.5: Replace `pending` by a real test for `parse3`. */
   "`parse3`" should "parse expressions with spaces between words" in pending
 }
+
+UNCOMMENT AFTER COMPLETION OF 2.1 */
