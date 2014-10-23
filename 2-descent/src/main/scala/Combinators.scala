@@ -31,7 +31,8 @@
   *
   *    Rewrite the combinators `choice`, `sequence` and
   *    `zeroOrMore` in terms of the methods `getOrElse` and `map`
-  *    of the class `Option`.
+  *    of the class `Option`. Alternatively, you may use `orElse`
+  *    and `flatMap`.
   *
   * 4. Implement the combinator `oneOrMore` and write tests for
   *    it in CombinatorsSpec.scala.
