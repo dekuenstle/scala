@@ -249,6 +249,9 @@ trait Combinators extends AE {
       case (selfRes, thatRes) =>
         thatRes
       }
+
+    def * : Parser[List[A]] = zeroOrMore(self)
+
   }
 
   /* The operators |, ~, ^^, <~, ~> make the parser's definition

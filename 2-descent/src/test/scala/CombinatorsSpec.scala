@@ -41,6 +41,7 @@ class CombinatorsSpec extends FlatSpec with Combinators {
 
   "The `zeroOrMore` combinator" should "build parsers of lists" in {
     val nums = zeroOrMore(exp)
+    val nums2 = exp*
 
     assert(nums("abcdefg") == Some((List.empty, "abcdefg")))
 
@@ -56,6 +57,8 @@ class CombinatorsSpec extends FlatSpec with Combinators {
           "rd power of 2" )
       )
     )
+    assert(nums("sum of 1 and 1sum of 2 and 2sum of 3 and 3rd power of 2") ==
+     nums2("sum of 1 and 1sum of 2 and 2sum of 3 and 3rd power of 2"))
   }
 
   /* Task 2.2.4: Replace `pending` by a real test for `oneOrMore`. */
@@ -65,6 +68,7 @@ class CombinatorsSpec extends FlatSpec with Combinators {
     assert(nums("abcdefg") == None)
 
     assert(nums("1234 abcd") == Some((List(Num(1234)), " abcd")))
+
 
     assert(nums("sum of 1 and 1sum of 2 and 2sum of 3 and 3rd power of 2") ==
       Some(
