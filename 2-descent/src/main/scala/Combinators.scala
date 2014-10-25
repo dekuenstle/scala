@@ -230,19 +230,25 @@ trait Combinators extends AE {
 
     /* Sequencing */
     def ~ [B] (that: => Parser[B]): Parser[(A, B)] =
-      ???
+      sequence(self, that)
 
     /* Post-processing */
     def ^^ [B] (postprocessor: A => B): Parser[B] =
-      ???
+      postprocess(self)(postprocessor)
 
     /* Sequence two parsers, ignore the second parser's result */
     def <~ [B] (that: => Parser[B]): Parser[A] =
-      ???
+      self ~ that ^^ {
+      case (selfRes, thatRes) =>
+        selfRes
+      }
 
     /* Sequence two parsers, ignore the first parser's result */
     def ~> [B] (that: => Parser[B]): Parser[B] =
-      ???
+      self ~ that ^^ {
+      case (selfRes, thatRes) =>
+        thatRes
+      }
   }
 
   /* The operators |, ~, ^^, <~, ~> make the parser's definition
@@ -316,12 +322,35 @@ trait Combinators extends AE {
    * produce an empty list as result.
    */
   def oneOrMore[A](parser: => Parser[A]): Parser[List[A]] =
-    ???
+    input => parser(input) match {
+      // parse failed; return empty none
+      case None =>
+        None
 
+      // parse succeeds; put the first result at the head of the
+      // list, and work on the rest of the input in the same
+      // manner.
+      case Some((firstResult, afterFirstResult)) =>
+        zeroOrMore(parser)(afterFirstResult) match {
+          case Some((otherResults, afterOtherResults)) =>
+            Some((firstResult :: otherResults, afterOtherResults))
+
+          case None =>
+            None
+        }
+    }
   /* Parse arithmetic expressions, allowing multiple whitespace
    * characters between words. For example:
    *
    * parse3(" sum    of     1   and 1 ") == Add(Num(1), Num(1))
    */
-  def parse3(code: String): Exp = ???
+  def parse3(code: String): Exp = exp(code.replaceAll("\\s+"," ").trim()) match {
+    case Some((exp, rest)) if rest.isEmpty
+    => exp
+    case Some((exp, rest)) if rest.nonEmpty
+    => sys.error("not an expression: " + code)
+    case None
+    => sys.error("not an expression: " + code)
+  }
+
 }
