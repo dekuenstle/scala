@@ -85,6 +85,10 @@ class CombinatorsSpec extends FlatSpec with Combinators {
 
   /* Task 2.2.5: Replace `pending` by a real test for `parse3`. */
   "`parse3`" should "parse expressions with spaces between words" in {
+    assert( parse3("1") == Num(1) )
+    assert( parse3("sum of 1 and 1") == Add(Num(1), Num(1)) )
+
+    assert( parse3("  1    ") == Num(1) )
     assert( parse3(" sum    of     1   and 1 ") == Add(Num(1), Num(1)) )
   }
 }

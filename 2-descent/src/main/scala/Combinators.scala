@@ -252,6 +252,7 @@ trait Combinators extends AE {
 
     def * : Parser[List[A]] = zeroOrMore(self)
 
+
   }
 
   /* The operators |, ~, ^^, <~, ~> make the parser's definition
@@ -347,7 +348,8 @@ trait Combinators extends AE {
    *
    * parse3(" sum    of     1   and 1 ") == Add(Num(1), Num(1))
    */
-  def parse3(code: String): Exp = exp(code.replaceAll("\\s+"," ").trim()) match {
+
+   def parse3(code: String): Exp = (zeroOrMore(whitespace) ~> exp2 <~ zeroOrMore(whitespace))(code) match {
     case Some((exp, rest)) if rest.isEmpty
     => exp
     case Some((exp, rest)) if rest.nonEmpty
@@ -356,4 +358,48 @@ trait Combinators extends AE {
     => sys.error("not an expression: " + code)
   }
 
+
+
+
+  def exp2: Parser[Exp] =   ( add2 | mul2 | num )
+
+  def add2: Parser[Exp] =
+    (sumOf2 ~> oneOrMore(whitespace) ~> exp2 <~ oneOrMore(whitespace) <~ and2 <~ oneOrMore(whitespace)) ~ exp2 ^^ {
+      case (lhs, rhs) => Add(lhs, rhs)
+    }
+
+  def mul2: Parser[Exp] =
+     (productOf2 ~> oneOrMore(whitespace) ~> exp2 <~ oneOrMore(whitespace) <~ and2 <~ oneOrMore(whitespace) ) ~ exp2 ^^ {
+      case (lhs, rhs) => Mul(lhs, rhs)
+    }
+
+  def productOf2: Parser[String] = product <~ oneOrMore(whitespace) <~ of
+
+  def sumOf2: Parser[String] = sum <~ oneOrMore(whitespace) <~ of
+
+  def and2: Parser[String] = input => parseStartString(input, "and")
+
+  def product: Parser[String] = input => parseStartString(input, "product")
+
+  def sum: Parser[String] = input => parseStartString(input, "sum")
+
+  def of: Parser[String] = input => parseStartString(input, "of")
+
+  def whitespace: Parser[String] = (input:String) => parseStartString(input, " ")
+
+
+
+
+
+  /*
+  // Old version with RegEx
+  def parse3(code: String): Exp = exp(code.replaceAll("\\s+"," ").trim()) match {
+    case Some((exp, rest)) if rest.isEmpty
+    => exp
+    case Some((exp, rest)) if rest.nonEmpty
+    => sys.error("not an expression: " + code)
+    case None
+    => sys.error("not an expression: " + code)
+  }
+  */
 }
