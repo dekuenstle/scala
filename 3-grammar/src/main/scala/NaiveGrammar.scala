@@ -171,7 +171,7 @@ object NaiveGrammar extends Combinators {
   //    trees of all parts mentioned in the production rule.
   //
   // 3. Create a syntax tree node with the nonterminal's symbol
-  //    and the result of of `parseRHS` as children.
+  //    and the result of `parseRHS` as children.
 
   def parseNonterminal(nonterminal: Nonterminal, grammar: Grammar): Parser[Tree] =
     parseRHS(grammar lookup nonterminal, grammar) ^^ {
@@ -202,11 +202,11 @@ object NaiveGrammar extends Combinators {
   //    one element.
   //
   // 2. If `ruleRHS` is a sequence of two parts, then concatenate
-  //    the list of syntax trees produced from the part with the
-  //    list of syntax trees produced from the second part.
+  //    the tree list produced from the first part with the tree
+  //    list produced from the second part.
   //
-  // 3. If `ruleRHS` is a choice, then return the list of syntax
-  //    trees for all parts in the case that matches.
+  // 3. If `ruleRHS` is a choice, then return the tree list
+  //    corresponding to the matching case.
   //
   //
   // For example, suppose we want to parse the right-hand-side of
