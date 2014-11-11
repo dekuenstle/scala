@@ -181,19 +181,54 @@ object NaiveGrammar extends Combinators {
   // `parseRHS` creates a list of syntax tree nodes for all parts
   // mentioned in the right hand side of a production rule.
   //
-  // Given the grammar `ae` and
+  // Examples:
   //
-  //   code = "sum of 1 and 2",
+  // parseRHS(num ~ num ~ num, ae)("1 2 3") ==
+  //   Some((
+  //     List(Leaf('num, "1"), Leaf('num, "2"), Leaf('num, "3")),
+  //     ""
+  //   ))
   //
-  // `parseRHS` will eventually return the list
+  // parseRHS(sumOf ~ exp ~ and ~ exp, ae)("sum of 1 and 1") ==
+  //   Some((
+  //     List(
+  //       Leaf('keyword, "sum of "),           // keyword "sum of "
+  //       Branch('exp, List(Leaf('num, "1"))), // left operand
+  //       Leaf('keyword, " and ")    ,         // keyword " and "
+  //       Branch('exp, List(Leaf('num, "1")))  // right operand
+  //     ),
+  //     ""
+  //   ))
   //
-  //   List(
-  //     Terminal('keyword, "sum of "),           // keyword "sum of "
-  //     Branch('exp, List(Terminal('num, "1"))), // left operand
-  //     Terminal('keyword, " and "),             // keyword " and "
-  //     Branch('exp, List(Terminal('num, "1")))  // right operand
-  //   )
+  // val threeNums = num | (num ~ and ~ num) | (num ~ and ~ num ~ and ~ num)
   //
+  // parseRHS(threeNums, ae)("1") ==
+  //   Some((
+  //     List(Leaf('num, "1")),
+  //     ""
+  //   ))
+  //
+  // parseRHS(threeNums, ae)("1 and 2") ==
+  //   Some((
+  //     List(
+  //       Leaf('num, "1"),
+  //       Leaf('keyword, " and "),
+  //       Leaf('num, "2")
+  //     ),
+  //     ""
+  //   ))
+  //
+  // parseRHS(threeNums, ae)("1 and 2 and 3") ==
+  //   Some((
+  //     List(
+  //       Leaf('num, "1"),
+  //       Leaf('keyword, " and "),
+  //       Leaf('num, "2")
+  //       Leaf('keyword, " and "),
+  //       Leaf('num, "3")
+  //     ),
+  //     ""
+  //   ))
   //
   // Please implement the following behavior.
   //
@@ -202,28 +237,11 @@ object NaiveGrammar extends Combinators {
   //    one element.
   //
   // 2. If `ruleRHS` is a sequence of two parts, then concatenate
-  //    the tree list produced from the first part with the tree
-  //    list produced from the second part.
+  //    the list produced from the first part with the list
+  //    produced from the second part.
   //
-  // 3. If `ruleRHS` is a choice, then return the tree list
+  // 3. If `ruleRHS` is a choice, then return the list
   //    corresponding to the matching case.
-  //
-  //
-  // For example, suppose we want to parse the right-hand-side of
-  // the rule
-  //
-  //    lhs := (e1 | e2 | e3) ~ (e4 | (e5 ~ e6)),
-  //
-  // given that the syntax tree of e1 is t1, the syntax tree of
-  // e2 is t2, and so on. Then `parseRHS` should eventually
-  // produce one of the following results:
-  //
-  //   List(t1, t4)
-  //   List(t1, t5, t6)
-  //   List(t2, t4)
-  //   List(t2, t5, t6)
-  //   List(t3, t4)
-  //   List(t3, t5, t6)
 
   def parseRHS(ruleRHS: RuleRHS, grammar: Grammar): Parser[List[Tree]] =
     ???
