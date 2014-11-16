@@ -17,13 +17,35 @@ trait Combinators {
 
   implicit class ParserOps[A](self: => Parser[A]) {
     def | (that: => Parser[A]): Parser[A] =
-      ???
+      input => self(input) match {
+      case Some(success) =>
+        Some(success)
+
+      case None =>
+        that(input)
+    }
 
     def ~ [B] (that: => Parser[B]): Parser[(A, B)] =
-      ???
+      input => self(input) match {
+      case Some((firstResult, afterFirstPart)) =>
+        that(afterFirstPart) match {
+          case Some((secondResult, afterSecondPart)) =>
+            Some( ((firstResult, secondResult), afterSecondPart) )
+          case None =>
+            None
+        }
+
+      case None =>
+        None
+    }
 
     def ^^ [B] (postprocess: A => B): Parser[B] =
-      ???
+      input => self(input) match {
+      case Some( (result, rest) ) =>
+        Some( (postprocess(result), rest) )
+      case None =>
+        None
+    }
   }
 
   /** @param regex: a Java regular expression

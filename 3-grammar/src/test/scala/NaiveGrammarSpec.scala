@@ -49,5 +49,24 @@ class NaiveGrammarSpec extends FlatSpec {
         Leaf('num, "1234"))))
   }
 
-  "You" should "write more tests" in fail("not finished yet")
+  val ng: Grammar =
+    Grammar(
+      start = exp,
+      rules = Map(
+        exp -> (add | mul),
+        add -> (sumOf ~ num ~ and ~ mul),
+        mul -> (productOf ~ num ~ and ~ (add | num))
+      )
+    )
+  def parseNG = parseGrammar(ng)
+
+
+  "You" should "write more tests" in {
+    assert(
+      simplifyAE(parseNG("product of 3 and sum of 1 and product of 2 and 5")) ==
+      parseAndSimplifyAE("product of 3 and sum of 1 and product of 2 and 5") )
+    assert(
+      parseNG("product of 3 and sum of 1 and product of 2 and 5") !=
+      parseAE("product of 3 and sum of 1 and product of 2 and 5"))
+  }
 }

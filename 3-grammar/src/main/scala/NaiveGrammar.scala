@@ -158,7 +158,10 @@ object NaiveGrammar extends Combinators {
   // `parseExp`, `parseAdd`, and `parseMul` of 2.1.
 
   def parseGrammar(grammar: Grammar): String => Tree =
-    ???
+    code => parseNonterminal(grammar.start, grammar)(code) match {
+      case Some((tree, rest)) => tree
+    }
+
 
   // `parseNonterminal` generalizes `parseExp`, `parseAdd` and
   // `parseMul` from 2.1. Given a grammar and a nonterminal,
@@ -244,12 +247,19 @@ object NaiveGrammar extends Combinators {
   //    corresponding to the matching case.
 
   def parseRHS(ruleRHS: RuleRHS, grammar: Grammar): Parser[List[Tree]] =
-    ???
+    code =>
+    ruleRHS match {
+      case Terminal(parser) => (parser^^{ result => List(result) })(code)
+      case Nonterminal(symbol) => (parseNonterminal(Nonterminal(symbol), grammar)^^{ result => List(result) })(code)
+      case Sequence(first, second) => ((parseRHS(first, grammar) ~ parseRHS(second, grammar))^^{ case (first, second) => first ::: second })(code)
+      case Choice(first, second) => ((parseRHS(first, grammar) | parseRHS(second, grammar))^^{result => result })(code)
+    }
 
   // We should now be able to parse arithmetic expressions.
   //
   // assert(parseGrammar(ae)("1234") ==
   //   Branch('exp, List(Leaf('num, "1234"))))
+
   //
   // assert(parseGrammar(ae)("sum of 1 and 2") ==
   //   Branch('exp, List(
@@ -270,8 +280,11 @@ object NaiveGrammar extends Combinators {
   //   simplifyAE(parseGrammar(ae)("sum of 1 and 2") ==
   //     Branch('add, List(Leaf('num, "1"), Leaf('num, "2")))
 
-  def simplifyAE(syntaxTree: Tree): Tree =
-    ???
+  def simplifyAE(syntaxTree: Tree): Tree = syntaxTree match {
+    case Branch('exp, children) => simplifyAE(children.head)
+    case Branch(symbol, children) => Branch(symbol, children map simplifyAE filter{case Branch(_,_) => true; case Leaf(symbol, value) => symbol != 'keyword } )
+    case Leaf(_,_) => syntaxTree
+  }
 
   /** parse an arithmetic expression and simplify it */
   def parseAndSimplifyAE(code: String): Tree =
