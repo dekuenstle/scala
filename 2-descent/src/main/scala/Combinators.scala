@@ -30,7 +30,7 @@
   *    http://www.scala-lang.org/api/current/index.html#scala.Option
   *
   *    Rewrite the combinators `choice`, `sequence` and
-  *    `zeroOrMore` in terms of the methods `getOrElse` and `map`
+  *    `zeroOrMore` in terms of the methods `orElse` and `flatMap`
   *    of the class `Option`.
   *
   * 4. Implement the combinator `oneOrMore` and write tests for
