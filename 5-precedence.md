@@ -20,7 +20,9 @@ Choose one as appropriate.
 
 2. If one result of `2 + 3 * 4` and `2 * 3 + 4` is wrong, then please adjust your parser until both are evaluated correctly.
 
-- [Optional] Add parentheses to the language, so that users may group expressions by hand. Examples: `(2 + 3) * 4` should evaluate to `20`, and `(1 + 2) * (3 + 4)` should evaluate to `21`.
+- [Optional] Add parentheses to the language, so that users may group expressions by hand.
+
+  Examples: `(2 + 3) * 4` should evaluate to `20`, and `(1 + 2) * (3 + 4)` should evaluate to `21`.
 
 
 Some test cases:
