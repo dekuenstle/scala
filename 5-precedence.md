@@ -58,16 +58,18 @@ There are multiple ways to implement operator precedence; feel free to adopt wha
 - Simplify the parse result for the evaluator in §5 of [last week's exercise][5].
 
 
-      def eval(t: Tree): Int = t match {
-        case Branch('add, List(lhs, rhs)) =>
-          eval(lhs) + eval(rhs)
+  ```
+  def eval(t: Tree): Int = t match {
+    case Branch('add, List(lhs, rhs)) =>
+      eval(lhs) + eval(rhs)
   
-        case Branch('mul, List(lhs, rhs)) =>
-          eval(lhs) * eval(rhs)
+    case Branch('mul, List(lhs, rhs)) =>
+      eval(lhs) * eval(rhs)
   
-        case Leaf('num, code) =>
-          code.toInt
-      }
+    case Leaf('num, code) =>
+      code.toInt
+  }
+  ```
 
 
 Finally, I'd like to mention a completely different and potentially harder approach: Dijkstra's [shunting-yard algorithm][6]. One could conceive a grammar of binary operators with precedences, so that its interpreter `parseGrammar` is exactly the shunting-yard algorithm.
