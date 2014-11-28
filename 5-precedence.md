@@ -45,13 +45,15 @@ There are multiple ways to implement operator precedence; feel free to adopt wha
 
 - Modify the starting grammar of [last week][1] to handle operator precedence.
 
-      Exp := Num | Add | Mul
+  ```
+  Exp := Num | Add | Mul
 
-      Num := <a natural number>
+  Num := <a natural number>
 
-      Add := Exp + Exp
+  Add := Exp + Exp
 
-      Mul := Exp * Exp
+  Mul := Exp * Exp
+  ```
 
 - Simplify the parse result for the evaluator in §5 of [last week's exercise][5].
 
