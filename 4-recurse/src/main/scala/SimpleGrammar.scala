@@ -1,5 +1,4 @@
 
-
 object SimpleGrammar extends util.Combinators {
   sealed trait Tree
   case class Leaf(symbol: Symbol, code: String) extends Tree
@@ -15,12 +14,13 @@ object SimpleGrammar extends util.Combinators {
     def ~ (rhs: RuleRHS) = Sequence(this, rhs)
   }
 
-
   val exp       = Nonterminal('exp)
+  val exp2       = Nonterminal('exp2)
   val add       = Nonterminal('add)
   val mul       = Nonterminal('mul)
 
   val num       = Terminal(digitsParser('num))
+  val eps       = Terminal(keywordParser(""), isComment=true)
   val plus       = Terminal(keywordParser(" + "), isComment=true)
   val star       = Terminal(keywordParser(" * "), isComment=true)
 
@@ -38,11 +38,12 @@ object SimpleGrammar extends util.Combinators {
 
   val ae: Grammar =
     Grammar(
-      start = exp,
+      start = exp2,
       rules = Map(
-        exp -> (add | mul | num),
-        add -> (exp ~ plus ~ exp),
-        mul -> (exp ~ star ~ exp)
+        exp2 -> (add ~ exp2  | mul ~ exp2 | eps ),
+        exp  -> (num ~ exp2),
+        add  -> (exp ~ plus ~ exp),
+        mul  -> (exp ~ star ~ exp)
       )
     )
 
@@ -73,3 +74,12 @@ object SimpleGrammar extends util.Combinators {
   def parseAE(code: String): Tree = parseGrammar(ae)(code)
 
 }
+
+
+
+
+/*
+A5:
+The parser keeps deducing exp -> add -> exp + exp -> add + exp -> exp + ... -> and + ... -> ... until 'forever' caused by the left recursion.
+We will remove the left recursion by adding another nonterminal and  further deductions
+*/
