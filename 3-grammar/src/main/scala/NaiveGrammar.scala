@@ -203,7 +203,7 @@ object NaiveGrammar extends Combinators {
   //     ""
   //   ))
   //
-  // val threeNums = num | (num ~ and ~ num) | (num ~ and ~ num ~ and ~ num)
+  // val threeNums = (num ~ and ~ num ~ and ~ num) | (num ~ and ~ num) | num
   //
   // parseRHS(threeNums, ae)("1") ==
   //   Some((
