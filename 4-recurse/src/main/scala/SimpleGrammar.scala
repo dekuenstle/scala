@@ -1,10 +1,12 @@
+import sext._
+
 
 object SimpleGrammar extends util.Combinators {
   sealed trait Tree
   case class Leaf(symbol: Symbol, code: String) extends Tree
   case class Branch(symbol: Symbol, children: List[Tree]) extends Tree
 
-  case class Nonterminal(symbol: Symbol) extends RuleRHS
+  case class Nonterminal(symbol: Symbol, isComment:Boolean = false) extends RuleRHS
   case class Terminal(parse: Parser[Tree], isComment:Boolean = false) extends RuleRHS
   case class Choice(lhs: RuleRHS, rhs: RuleRHS) extends RuleRHS
   case class Sequence(lhs: RuleRHS, rhs: RuleRHS) extends RuleRHS
@@ -14,8 +16,7 @@ object SimpleGrammar extends util.Combinators {
     def ~ (rhs: RuleRHS) = Sequence(this, rhs)
   }
 
-  val exp       = Nonterminal('exp)
-  val exp2       = Nonterminal('exp2)
+  val exp       = Nonterminal('exp, true)
   val add       = Nonterminal('add)
   val mul       = Nonterminal('mul)
 
@@ -38,12 +39,11 @@ object SimpleGrammar extends util.Combinators {
 
   val ae: Grammar =
     Grammar(
-      start = exp2,
+      start = exp,
       rules = Map(
-        exp2 -> (add ~ exp2  | mul ~ exp2 | eps ),
-        exp  -> (num ~ exp2),
-        add  -> (exp ~ plus ~ exp),
-        mul  -> (exp ~ star ~ exp)
+        exp -> (add ~ exp  | mul ~ exp | num | eps ),
+        add  -> ( num ~ exp ~ plus ~ exp),
+        mul  -> ( num ~ exp ~ star ~ exp)
       )
     )
 
@@ -54,17 +54,18 @@ object SimpleGrammar extends util.Combinators {
 
   def parseNonterminal(nonterminal: Nonterminal, grammar: Grammar): Parser[Tree] =
     parseRHS(grammar lookup nonterminal, grammar) ^^ {
-      children => children.size match {
-        case 1 => children.head
-        case _ => Branch(nonterminal.symbol, children)
-      }
+      children =>
+      if (nonterminal.isComment && children.size>0)
+        children.head
+      else
+        Branch(nonterminal.symbol, children)
     }
 
   def parseRHS(ruleRHS: RuleRHS, grammar: Grammar): Parser[List[Tree]] =
     code =>
     ruleRHS match {
       case Terminal(parser, isComment) => (parser^^{ result => if(isComment) List() else List(result)  })(code)
-      case Nonterminal(symbol) => (parseNonterminal(Nonterminal(symbol), grammar)^^{ result => List(result)})(code)
+      case Nonterminal(symbol, isComment) => (parseNonterminal(Nonterminal(symbol, isComment), grammar)^^{ result => List(result)})(code)
       case Sequence(first, second) => ((parseRHS(first, grammar) ~ parseRHS(second, grammar))^^{ case (first, second) => first ::: second })(code)
       case Choice(first, second) => ((parseRHS(first, grammar) | parseRHS(second, grammar))^^{result => result })(code)
     }
@@ -73,13 +74,46 @@ object SimpleGrammar extends util.Combinators {
 
   def parseAE(code: String): Tree = parseGrammar(ae)(code)
 
+  def simplifyAE(node:Tree): Tree = simplifyAEHelper(node) match {
+    case Some(n)=> n
+    case None => Leaf('error, node.treeString)
+  }
+
+  def simplifyAEHelper(node:Tree): Option[Tree] = node match {
+    case Branch(sym,children) =>
+                                if(children.size>0)
+                                  Some( Branch(sym, children.flatMap(simplifyAEHelper)) )
+                                else
+                                  None
+    case Leaf(_,_) => Some(node)
+  }
+
+  def parseAndSimplifyAE(code: String): Tree = simplifyAE(parseAE(code))
+
+  def eval(t: Tree): Int = t match {
+    case Branch('add, List(lhs, rhs)) =>
+      eval(lhs) + eval(rhs)
+
+    case Branch('mul, List(lhs, rhs)) =>
+      eval(lhs) * eval(rhs)
+
+    case Leaf('num, code) =>
+      code.toInt
+  }
 }
 
 
 
 
 /*
-A5:
+4.5:
 The parser keeps deducing exp -> add -> exp + exp -> add + exp -> exp + ... -> and + ... -> ... until 'forever' caused by the left recursion.
-We will remove the left recursion by adding another nonterminal and  further deductions
+We force a num first in add,mul and add a null terminal to end the recursion.
+
+4.7:
+After rewriting the removal of exp (had bad implementation in Ex3), some exp Branches without children where left.
+Simplifier removes these.
+
+4.8:
+Term '2 * 3 + 4' evaluates to 14, because it evaluates - like always - from right to left. I do expect * before + and left before right.
 */
