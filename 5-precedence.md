@@ -27,7 +27,7 @@ Choose one as appropriate.
 
 Some test cases:
 
-        2 + 3 * 4 ==  9
+        2 + 3 * 4 == 14
         2 * 3 + 4 == 10
     1 + 2 * 3 + 4 == 11
     1 * 2 + 3 * 4 == 14
