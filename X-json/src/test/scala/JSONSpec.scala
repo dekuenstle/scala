@@ -82,8 +82,8 @@ class JSONSpec extends FlatSpec {
       "value" -> "File",
       "popup" -> Map(
         "menuitem" -> List(
-          42,
-          42,
+          Map("value" -> "New", "onclick" -> "CreateNewDoc()"),
+          Map("value" -> "Open", "onclick" -> "OpenDoc()"),
           Map("value" -> "Close", "onclick" -> "CloseDoc()")
         )
       )
