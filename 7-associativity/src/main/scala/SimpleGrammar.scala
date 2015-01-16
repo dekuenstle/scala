@@ -19,6 +19,8 @@ object SimpleGrammar extends util.Combinators {
   }
 
   val exp       = Nonterminal('exp, true)
+  var noEquExp    = Nonterminal('noEquExp, true)
+  var noIfExp    = Nonterminal('noIfExp, true)
   var dotExp    = Nonterminal('dotExp, true)
   var dashExp   = Nonterminal('dashExp, true)
   var dot       = Nonterminal('dot, true)
@@ -28,12 +30,18 @@ object SimpleGrammar extends util.Combinators {
   val mul       = Nonterminal('mul)
   val sub       = Nonterminal('sub)
   val div       = Nonterminal('div)
+  val equ       = Nonterminal('equ)
+  val ifThenElse= Nonterminal('ifThenElse)
 
   val num       = Terminal(digitsParser('num))
   val plus      = Terminal(keywordParser(" + "), isComment=true)
   val star      = Terminal(keywordParser(" * "), isComment=true)
   val minus     = Terminal(keywordParser(" - "), isComment=true)
   val slash     = Terminal(keywordParser(" / "), isComment=true)
+  val equality  = Terminal(keywordParser(" == "), isComment=true)
+  val iff       = Terminal(keywordParser("if "), isComment=true)
+  val then      = Terminal(keywordParser(" then "), isComment=true)
+  val elsee     = Terminal(keywordParser(" else "), isComment=true)
 
 
   def digitsParser(symbol: Symbol): Parser[Tree] =
@@ -51,16 +59,22 @@ object SimpleGrammar extends util.Combinators {
     Grammar(
       start = exp,
       rules = Map(
-        exp -> ( dash | dot | num ),
+        exp -> ( ifThenElse | equ | dash | dot | num ),
+        noIfExp -> ( equ | dash | dot | num ),
+        noEquExp -> ( dash | dot | num ),
         dotExp -> (mul | div | num ),
         dashExp -> (add | sub | num ),
         dot -> (mul | div),
         dash -> (add | sub),
 
-        add  -> ( dotExp ~ plus ~ exp ),
+        add  -> ( dotExp ~ plus ~ noEquExp ),
         mul  -> ( num ~ star ~ dotExp),
         sub  -> ( dotExp ~ OneOrMore(minus ~ (dot | add | num))),
-        div  -> ( num ~ OneOrMore(slash ~ (mul | num)))
+        div  -> ( num ~ OneOrMore(slash ~ (mul | num))),
+
+        equ  -> ( noEquExp ~ equality ~ noIfExp),
+
+        ifThenElse -> (iff ~ noIfExp ~ then ~ exp ~ elsee ~ exp )
       )
     )
 
@@ -73,7 +87,7 @@ object SimpleGrammar extends util.Combinators {
   def parseNonterminal(nonterminal: Nonterminal, grammar: Grammar): Parser[Tree] =
     parseRHS(grammar lookup nonterminal, grammar) ^^ {
       children =>
-      if (nonterminal.isComment && children.size>0)
+      if (nonterminal.isComment)
         children.head
       else
         Branch(nonterminal.symbol, children)
@@ -100,7 +114,7 @@ object SimpleGrammar extends util.Combinators {
 
   def removeEmptyBranches(node:Tree): Option[Tree] = node match {
     case Branch(sym,children) =>
-                                if(children.size>2)
+                                if(children.size>2 && sym != 'ifThenElse)
                                   removeEmptyBranches(
                                     Branch(
                                       sym,
@@ -135,9 +149,25 @@ object SimpleGrammar extends util.Combinators {
     case Branch('mul, List(lhs, rhs)) =>
       eval(lhs) * eval(rhs)
 
+    case Branch('equ, List(lhs, rhs)) =>
+      if(eval(lhs) == eval(rhs)) 1 else 0
+
+    case Branch('ifThenElse, List(pred, then, elsee)) =>
+      if(eval(pred)!=0) eval(then) else  eval(elsee)
+
     case Leaf('num, code) =>
       code.toInt
   }
 }
+
+
+
+/*
+ex2:
+Failed evaluating 5 - 2 - 1 correctly at first, because it got parsed right associative,
+but Subtraction is left associative. Same with division.
+We dont have this problem with addition and multiplikation because they are right and left associative.
+
+*/
 
 
