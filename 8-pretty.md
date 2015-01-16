@@ -137,7 +137,7 @@ indentation level.
     // hello
     //   world
     //
-    def renderLayout(layout: Layout): String
+    def render(layout: Layout): String
 
 Define `Doc` to be lists of all possible layouts of syntax trees.
 The pretty printer converts each tree to `Doc`, then finds the
