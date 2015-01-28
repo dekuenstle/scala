@@ -19,12 +19,12 @@ object SimpleGrammar extends util.Combinators {
   }
 
   val exp       = Nonterminal('exp, true)
-  var noEquExp    = Nonterminal('noEquExp, true)
-  var noIfExp    = Nonterminal('noIfExp, true)
-  var dotExp    = Nonterminal('dotExp, true)
-  var dashExp   = Nonterminal('dashExp, true)
-  var dot       = Nonterminal('dot, true)
-  var dash      = Nonterminal('dash, true)
+  val noEquExp    = Nonterminal('noEquExp, true)
+  val noIfExp    = Nonterminal('noIfExp, true)
+  val dotExp    = Nonterminal('dotExp, true)
+  val dashExp   = Nonterminal('dashExp, true)
+  val dot       = Nonterminal('dot, true)
+  val dash      = Nonterminal('dash, true)
 
   val add       = Nonterminal('add)
   val mul       = Nonterminal('mul)
@@ -144,17 +144,98 @@ object SimpleGrammar extends util.Combinators {
     case Leaf(symbol, code) => code
   }
 
+/* ************************************************************** */
+
+  type Layout = List[(Int, String)]
+  type Doc = List[Layout]
+
+  implicit class LayoutOps(self:Layout){
+    def widest:(Int, String) = self.maxBy( lineWidth(_) )
+    def width:Int = lineWidth( self.widest )
+    private def lineWidth( line:(Int, String) ):Int = line match { case (intendLevel, code) => (intendLevel + code.trim().length) }
+  }
+
+  def enumerateHelper(tree: Tree, intendLevel: Int, shouldIntend:Boolean): Doc = tree match {
+    case Branch(sym, List(lhs,rhs)) => {
+      val lhsDoc = enumerateHelper(lhs, intendLevel, true)
+      val rhsDoc = enumerateHelper(rhs, if(shouldIntend) intendLevel else (intendLevel + 2) , true)
+
+      val infix = symbolToInfix(sym)
+      val beginDoc = lhsDoc.map(mergeLayout(_,infix))
+
+      val horDoc:Doc = for{ lhsLay <- beginDoc; rhsLay <- rhsDoc}
+                       yield mergeLayout(lhsLay,rhsLay)
+      val vertDoc:Doc = for{ lhsLay <- beginDoc; rhsLay <- rhsDoc}
+                        yield lhsLay ::: rhsLay
+
+      horDoc ::: vertDoc
+    }
+
+
+    case Branch('ifThenElse, List(pred,lhs,rhs)) => {
+      val predDoc = enumerateHelper(pred, intendLevel+3, false)
+      val lhsDoc = enumerateHelper(lhs, intendLevel+2, false)
+      val rhsDoc = enumerateHelper(rhs, intendLevel+2, false)
+
+      val ifDoc = predDoc.map(mergeLayout((intendLevel, "if "),_))
+
+      val horIfThenDoc = ifDoc.map(mergeLayout(_," then "))
+      val horIfThenLhsDoc = for{ lhsLay <- horIfThenDoc; rhsLay <- lhsDoc}
+                            yield mergeLayout(lhsLay,rhsLay)
+      val horIfThenLhsElseDoc = horIfThenLhsDoc.map(mergeLayout(_," else "))
+      val horDoc:Doc = for{ lhsLay <- horIfThenLhsElseDoc; rhsLay <- rhsDoc}
+                   yield mergeLayout(lhsLay,rhsLay)
+
+      val vertIfThenDoc = ifDoc.map(mergeLayout(_," then"))
+      val vertIfThenLhsDoc = for{ lhsLay <- vertIfThenDoc; rhsLay <- lhsDoc}
+                             yield lhsLay ::: rhsLay
+      val vertIfThenLhsElseDoc = vertIfThenLhsDoc.map( _ :+ (intendLevel,"else"))
+      val vertDoc:Doc = for{ lhsLay <- vertIfThenLhsElseDoc; rhsLay <- rhsDoc}
+                    yield lhsLay ::: rhsLay
+      horDoc ::: vertDoc
+    }
+    case Leaf(symbol, code) => List( List( (intendLevel, code) ) )
+  }
+
+  def symbolToInfix(sym:Symbol):String = sym match {
+    case 'sub => " - "
+    case 'add => " + "
+    case 'div => " / "
+    case 'mul => " * "
+    case 'equ => " == "
+  }
+
+
+  def mergeLayout(lhs:Layout, rhs:Layout):Layout = (lhs.init :+ (lhs.last._1, (lhs.last._2 + rhs.head._2) )) ::: rhs.tail
+  def mergeLayout(lhs:(Int, String), rhs:Layout):Layout = mergeLayout(List(lhs),rhs)
+  def mergeLayout(lhs:Layout, rhs:String):Layout = mergeLayout(lhs,List((0,rhs)))
 
 
 
+  def enumerate(tree: Tree): Doc = enumerateHelper(tree, 0, false)
 
 
+  def findBestLayout(doc: Doc, lineWidth: Int): Layout = {
+    val fittingLayouts = doc.filter(_.width<=lineWidth)
+    if(fittingLayouts.isEmpty){
+      doc.minBy( _.width )
+    } else {
+      fittingLayouts.minBy(_.size)
+    }
+  }
 
+  def render(layout: Layout): String = layout match {
+    case Nil => ""
+    case (intendation, code) :: tail => " "*intendation + code.trim() + System.lineSeparator() + render( tail )
+  }
 
+  def pretty(tree: Tree, lineWidth: Int): String = {
+    val doc = enumerate(tree)
+    val bestLayout = findBestLayout(doc, lineWidth)
+    render( bestLayout ).trim()
+  }
 
-
-
-
+/* ************************************************************** */
 
   def parseAndEval(code: String): Int = eval(parseAndSimplifyAE(code))
 
