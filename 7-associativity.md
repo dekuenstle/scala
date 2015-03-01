@@ -48,6 +48,9 @@ Modify your parser until the evaluator works as expected.
     parseAndEval("5 - 2 - 1")  == 2
     parseAndEval("36 / 6 / 2") == 3
 
+    parseAndEval("64 / 2 / 4 - 27 / 3 / 3 - 12 / 3 / 2") == 3
+    parseAndEval("64 / 2 * 4 - 27 / 3 * 3 + 12 / 3 * 2") == 109
+
 
 #### Task 3: A bigger language
 
