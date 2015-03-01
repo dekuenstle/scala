@@ -33,6 +33,8 @@ class Tokenizer(
 	def first = tok
 	def rest = new Tokenizer(oth, tokenParser, garbageParser)
 	def atEnd = removeAllLeadingGarbage(oth).length==0
+
+	def all: List[Token] = if (this.atEnd) List(this.first) else this.first :: this.rest.all
 }
 
 

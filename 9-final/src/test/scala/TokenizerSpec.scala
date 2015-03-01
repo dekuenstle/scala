@@ -21,6 +21,8 @@ class TokenizersSpec extends FlatSpec {
     val tokenizer2 = tokenizer1.rest
     assert(tokenizer2.atEnd)
     assert(tokenizer2.first == IntLiteral("12") )
+
+    assert(tokenizer1.all == List(IntLiteral("1"),IntLiteral("12")))
   }
 
 }
