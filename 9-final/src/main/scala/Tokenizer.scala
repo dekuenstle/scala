@@ -11,10 +11,10 @@ class Tokenizer(
 		parseToken(garbageParser)
 	}
 
-	private def parseToken(code:String):Tuple2[Token,String] =
+	private def parseToken(code:String):(Token,String) =
 		tokenParser(code) match {
 			case Some((token, rest)) => (token, rest)
-			case None => (noTokenFoundError, code)
+			case None => (Error("No token found"), "")
 	}
 	private def removeLeadingGarbage(code:String) =
 		garbageParser(code) match {

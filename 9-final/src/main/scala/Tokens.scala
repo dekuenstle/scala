@@ -4,12 +4,6 @@ object Tokens {
 	case class IntLiteral(code:String) extends Token
 	case class Error(message:String) extends Token
 	case class Operator(sym:Symbol) extends Token
-
-	val noTokenFoundError = Error("No token found")
-
-	val plus = Operator('plus)
-	val minus = Operator('minus)
-	val star = Operator('star)
-	val slash = Operator('slash)
-
+	case class LeftParenthesis(sym:Symbol) extends Token
+	case class RightParenthesis(sym:Symbol) extends Token
 }

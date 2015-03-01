@@ -66,7 +66,6 @@ Read a token.
 	If the token is a right parenthesis:
 		Until the token at the top of the stack is a left parenthesis, pop operators off the stack onto the output queue.
 		Pop the left parenthesis from the stack, but not onto the output queue.
-		If the token at the top of the stack is a function token, pop it onto the output queue.
 		If the stack runs out without finding a left parenthesis, then there are mismatched parentheses.
 When there are no more tokens to read:
 	While there are still operator tokens in the stack:
