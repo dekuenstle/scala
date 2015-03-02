@@ -16,11 +16,13 @@ class Tokenizer(
 			case Some((token, rest)) => (token, rest)
 			case None => (Error("No token found"), "")
 	}
+
 	private def removeLeadingGarbage(code:String) =
 		garbageParser(code) match {
 			case Some((_,garbageless)) => garbageless
 			case None => code
 	}
+
 	private def removeAllLeadingGarbage(code:String):String = {
 		val garbageless = removeLeadingGarbage(code)
 		if(garbageless.length==code.length)
@@ -28,7 +30,6 @@ class Tokenizer(
 		else
 			removeAllLeadingGarbage(garbageless)
 	}
-
 
 	def first = tok
 	def rest = new Tokenizer(oth, tokenParser, garbageParser)

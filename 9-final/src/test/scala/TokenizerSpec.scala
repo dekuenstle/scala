@@ -3,9 +3,6 @@ import StdParsers._
 import StdTokens._
 import Tokens._
 
-
-
-
 class TokenizersSpec extends FlatSpec {
 
   it should "recognize end" in {
@@ -26,9 +23,6 @@ class TokenizersSpec extends FlatSpec {
     assert(tokenizer2.first == IntLiteral("12") )
 
     assert(tokenizer1.all == List(IntLiteral("1"),IntLiteral("12")))
-
-
-
   }
 
 }

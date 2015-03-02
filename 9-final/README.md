@@ -1,7 +1,7 @@
 Shunting Yard
 =============
 
-Abstract
+Motivation
 --------
 
 Evaluating simple mathematic expressions like `1+2*4` to `9` seems easy for our educated mind.
@@ -17,16 +17,16 @@ Tokens
 
 As educated humans we automatic build semantic groups out of an expression like `12 +  2*4` to `Number(12),Whitespace,Plus,Whitespace,Number(2),Times,Number(4)`.
 A semantic group like this is what we call a `token`.
-Now have a look at [Tokens.scala](./src/main/scala/Tokens.scala).
+Now have a look at [Tokens.scala](./src/main/scala/Tokens.scala) and [StdTokens.scala](./src/main/scala/StdTokens.scala).
 
 Tokenizer
 ---------
 
-We give our computer an expression as an String. So the computer has to build tokens out of loose characters - thats the job of the Tokenizer. The Tokenizer uses Parsers for finding tokens.
-A Parser in our usecase is a function trying to find a specific token at the beginning of a String.
-Usually a parser uses regual expressions and can be combined with combinators ( [Combinators.scala](./src/main/scala/util/Combinators.scala) ).
-Not all tokens are interesting for us. In the example above we dont need the `Whitespace` token.
-Therefore our [Tokenizer.scala](./src/main/scala/Tokenizer.scala) takes a parser for the usefull tokens like numbers, operators, parenthesis and one for useless ones like whitespaces or comments and  [TokenizerSpec.scala](./src/test/scala/TokenizerSpec.scala).
+We give our computer an expression as an String. So the computer has to build tokens out of loose characters - thats the job of the Tokenizer specified in [TokenizerSpec.scala](./src/test/scala/TokenizerSpec.scala).
+The Tokenizer uses Parsers for finding tokens. A Parser in our usecase is a function trying to find a specific token at the beginning of a String.
+Usually a parser uses regual expressions and can be combined with combinators defined in [Combinators.scala](./src/main/scala/util/Combinators.scala) with the idea borrowed from [scala-lang.org's Combinators](https://wiki.scala-lang.org/display/SW/Parser+Combinators--Getting+Started).
+Not all tokens are interesting for us. In the example above we don't need the `Whitespace` token.
+Therefore our [Tokenizer.scala](./src/main/scala/Tokenizer.scala) takes a parser for the usefull tokens like numbers, operators, parenthesis and one for useless ones like whitespaces or comments which will be dropped, you'll find some parsers in [StdParsers.scala](./src/test/scala/StdParsers.scala).
 
 Infix and Postfix
 -----------------
@@ -46,13 +46,23 @@ Evaluate Infix:
 Evalutate Postfix:
 1 2 3 * + = 1 6 + = 7
 ```
-Because we just need the tokens and the implementation of the operations and no other custom evaluation rules postfix is superb for our evaluation of the tokens. Have a look at [PostfixEvaluators.scala](./src/main/scala/PostfixEvaluators.scala) which uses a stack to hold all possible operands left to the current token and [PostfixEvaluatorsSpec.scala](./src/test/scala/PostfixEvaluatorsSpec.scala).
+
+Evaluate postfix expression
+---------------------------
+
+Because we just need the tokens and the implementation of the operations and no other custom evaluation rules postfix is superb for our evaluation of the tokens like you can see in [PostfixEvaluatorsSpec.scala](./src/test/scala/PostfixEvaluatorsSpec.scala).
+The postfix evaluator [PostfixEvaluators.scala](./src/main/scala/PostfixEvaluators.scala) visits the input token from left to right.
+If the token is an literal it is a future operand and gets pushed on a stack. If the token is an operation a lookup for the implementation of this operator happens and will be executed.
+We implement a operation with a function which get's the operand stack and the remaining input token as parameter and return the updated operand stack and a number representing how many of the remaining input tokens will be skipped.
+A classic binary operation like the addition will pop two items from the operand stack, checks whether they are integers, adds them and pushes the result back on the stack.
+This way leads to very flexible possible operations, but leaves a lot of work like error handling. Therefore you can see a helper function for binary operations and some operator implementations in [StdOperators.scala](./src/main/scala/StdOperators.scala).
 
 Shunting Yard algorithm
 -----------------------
 
 Like mentioned above infix is more common to us and you probably dont want to be as rude as [HP](http://en.wikipedia.org/wiki/HP-10C_series) and forcing Postfix input only, so we have to change the infix token input from out Tokenizer to a Postfix Token output for out PostfixEvaluator. We close this gap with the Shunting Yard algorithm invented by Dijkstra for exactly this purpose.
-We visit each token in the infix notation from left right and hold information about the precedence (eg. number) and associativity (LEFT,RIGHT) of operator token. We fill a queue with the token in postfix order and buffer operators on an stack till we can add to the queue which happens of course if its operands got already added.
+Get a feeling what it does with the specification [ShuntingYardSpec.scala](./src/test/scala/ShuntingYardSpec.scala).
+We visit each token in the infix notation from left right and hold information about the precedence (eg. addition has lower precedence than multiplication) and associativity (LEFT,RIGHT) of operator token. We fill a queue with the token in postfix order and buffer operators on an stack till we can add to the queue which happens of course if its operands got already added.
 ```
 Read a token.
 	the token is a number, then add it to the output queue.
@@ -73,9 +83,39 @@ When there are no more tokens to read:
 		Pop the operator onto the output queue.
 Exit.
 ```
-(source: [Wikipedia:ShuntingYard](http://en.wikipedia.org/wiki/Shunting-yard_algorithm#The_algorithm_in_detail))
+(pseudocode from [Wikipedia:ShuntingYard](http://en.wikipedia.org/wiki/Shunting-yard_algorithm#The_algorithm_in_detail))
+Have a look at [ShuntingYard.scala](./src/main/scala/ShuntingYard.scala) to see the real implementation, which follows directly the pseudocode above.
 
-Have a look at the [ShuntingYard.scala](./src/main/scala/ShuntingYard.scala) and [ShuntingYardSpec.scala](./src/test/scala/ShuntingYardSpec.scala)
+Put it all together
+---------------
+
+Now that we fullfilled all the single steps from tokenizing, shunting to evaluating we can come back to our motivation at the beginning. [StdExpressionEvaluators.scala](./src/main/scala/StdExpressionEvaluators.scala) fills the Tokenizer, ShuningYard and PostfixEvaluator with some basic mathematic token, parser and implementation and evaluates therefore mathematic expressions with if-branches.
+With a implicit class it's easy on the eyes like you see in [StdExpressionEvaluatorsSpec.scala](./src/main/scala/StdExpressionEvaluatorsSpec.scala).
+
+> This implementation is flexible an should cover a lot more use cases than simply mathematic expressions.
+
+APPENDIX
+========
+
+
+If-then-else implementation
+------------
+
+We handle `if`,`then`,`else` each like a unary operator with low precedence.
+If the parameter of `if` is not equal to 0, it doesnt nothing more than removing the parameter from the stack.
+Therefore the code of the `then` branch should follow.
+But if the parameter of `if` is equal to 0 it searches for the `then` token and let the input token skip till after `then` - what follows is of course the code of the `else` branch.
+The `then` operator skips the code of the following `else` branch.
+See [StdOperators.scala](./src/main/scala/StdOperators.scala) for an implementation.
+
+Error handling
+-----------
+
+The postfix evaluator and the shunting yard implementation use the [Try class](http://www.scala-lang.org/files/archive/nightly/docs/library/index.html#scala.util.Try) heavily.
+This gives the power to return error descriptions and creates nice self documenting code.
+The Tokenizer lacks a bit of error handling and has just the possibility to return `Error` token, but this should be good enough for this approach.
+
+
 
 
 

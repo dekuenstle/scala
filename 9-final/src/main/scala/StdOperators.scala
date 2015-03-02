@@ -4,7 +4,7 @@ import StdTokens._
 import Tokens._
 
 
-object StdOperators {
+object StdOperations {
 
 	private val ifImplementation: OperatorImpl =
 		(tokens, stack) => {
