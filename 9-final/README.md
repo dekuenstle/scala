@@ -26,7 +26,7 @@ We give our computer an expression as an String. So the computer has to build to
 The Tokenizer uses Parsers for finding tokens. A Parser in our usecase is a function trying to find a specific token at the beginning of a String.
 Usually a parser uses regual expressions and can be combined with combinators defined in [Combinators.scala](./src/main/scala/util/Combinators.scala) with the idea borrowed from [scala-lang.org's Combinators](https://wiki.scala-lang.org/display/SW/Parser+Combinators--Getting+Started).
 Not all tokens are interesting for us. In the example above we don't need the `Whitespace` token.
-Therefore our [Tokenizer.scala](./src/main/scala/Tokenizer.scala) takes a parser for the usefull tokens like numbers, operators, parenthesis and one for useless ones like whitespaces or comments which will be dropped, you'll find some parsers in [StdParsers.scala](./src/test/scala/StdParsers.scala).
+Therefore our [Tokenizer.scala](./src/main/scala/Tokenizer.scala) takes a parser for the usefull tokens like numbers, operators, parenthesis and one for useless ones like whitespaces or comments which will be dropped, you'll find some parsers in [StdParsers.scala](./src/main/scala/StdParsers.scala).
 
 Infix and Postfix
 -----------------
@@ -90,7 +90,7 @@ Put it all together
 ---------------
 
 Now that we fullfilled all the single steps from tokenizing, shunting to evaluating we can come back to our motivation at the beginning. [StdExpressionEvaluators.scala](./src/main/scala/StdExpressionEvaluators.scala) fills the Tokenizer, ShuningYard and PostfixEvaluator with some basic mathematic token, parser and implementation and evaluates therefore mathematic expressions with if-branches.
-With a implicit class it's easy on the eyes like you see in [StdExpressionEvaluatorsSpec.scala](./src/main/scala/StdExpressionEvaluatorsSpec.scala).
+With a implicit class it's easy on the eyes like you see in [StdExpressionEvaluatorsSpec.scala](./src/test/scala/StdExpressionEvaluatorsSpec.scala).
 
 > This implementation is flexible an should cover a lot more use cases than simply mathematic expressions.
 
